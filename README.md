@@ -10,14 +10,14 @@ A simple ped shop script for FiveM.
 
 ## Framework Support
 
-- [] QBCore
+- [ ] QBCore
 - [x] QBox
-- [] ESX
+- [ ] ESX
 
 ## Inventory Support
 
 - [x] ox_inventory
-- [] qb-inventory
+- [ ] qb-inventory
 
 ## Installation
 
