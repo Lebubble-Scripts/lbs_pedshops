@@ -1,9 +1,8 @@
 Config = {}
 
 
-Config.Notify = 'ox'
+Config.Notify = 'qb'
 Config.Framework = 'qb'
-Config.Inventory = 'ox'
 
 if Config.Framework == 'qb' then
     QBCore = exports['qb-core']:GetCoreObject()

@@ -22,17 +22,31 @@ end
 
 function getItemCount(item)
     local Player = getPlayer(source)
-    if Config.Inventory == 'ox' then
+    if GetResourceState('ox_inventory') == 'started' then
         return exports.ox_inventory:GetItemCount(source, item)
-    elseif Config.Inventory == 'qb' then
+    elseif GetResourceState('qb-inventory') == 'started' then
         return Player.Functions.GetItemByName(item).amount
     end
 end
 
 function addItem(source, item)
     local src = source
-    if Config.Inventory == 'ox' then
+    if GetResourceState('ox_inventory') == 'started' then
         print('Adding item: ' .. item)
         exports.ox_inventory:AddItem(src, item, 1)
+    elseif GetResourceState('qb-inventory') == 'started' then
+        exports['qb-inventory']:AddItem(src, item, 1)
+    end
+end
+
+function notifyPlayer(source, item, price)
+    if Config.Notify == 'ox' then
+        TriggerClientEvent('ox_lib:notify', source, {
+            title = "Success",
+            description = "You bought " .. item .. " for $" .. price,
+            type = "success",
+        })
+    elseif Config.Notify == 'qb' then
+        TriggerClientEvent('QBCore:Notify', source, "You bought " .. item .. " for $" .. price, "success")
     end
 end

@@ -8,7 +8,7 @@ local locations = {
 local purchItems = {
 lockpick = 10,
 bandage = 5,
-testburger = 2
+tosti = 2,
 }
 
 
@@ -44,22 +44,22 @@ RegisterServerEvent('lbs_pedshops:server:buyItem', function(item, price)
     if not checkDist(src, location) then return end
 
     if Player.Functions.RemoveMoney('cash', itemPrice) then 
-        print('attempting to add item')
         addItem(src, item)
+        notifyPlayer(src, item, itemPrice)
     end
 
 end)
 
 
-RegisterServerEvent('lbs_pedshops:server:sellItem', function(item, price)
-    local src = source
-    local Player = getPlayer(src)
-    local itemPrice = verifyPrice(item)
-    if not verifyItem(item) then return end
-    if type(itemPrice) ~= "number" then return end
-    if not checkDist(src, location) then return end
-    if Player.Functions.RemoveItem(item, 1) then 
-        Player.Functions.AddMoney('cash', itemPrice)
-    end
+-- RegisterServerEvent('lbs_pedshops:server:sellItem', function(item, price)
+--     local src = source
+--     local Player = getPlayer(src)
+--     local itemPrice = verifyPrice(item)
+--     if not verifyItem(item) then return end
+--     if type(itemPrice) ~= "number" then return end
+--     if not checkDist(src, location) then return end
+--     if Player.Functions.RemoveItem(item, 1) then 
+--         Player.Functions.AddMoney('cash', itemPrice)
+--     end
 
-end)
+-- end)

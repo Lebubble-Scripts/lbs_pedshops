@@ -1,7 +1,7 @@
 repeat 
     Wait(1)
     print('Waiting for GlobalState.PedSalesLoc and GlobalState.PedSalesItems')
-until GlobalState.PedSalesLoc ~= nil and GlobalState.PedSalesItems ~= nil
+until GlobalState.PedSalesLoc ~= nil and GlobalState.PedSalesPurchItems ~= nil
 
 
 local location = GlobalState.PedSalesLoc

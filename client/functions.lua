@@ -12,8 +12,16 @@ function getImage(item)
                 return Items[item]
             end
         end
-    else 
-        return 'nui://qb-inventory/html/img' .. QBCore.Shared.Items[item].image
+    elseif GetResourceState('qb-inventory') == 'started' then
+        if QBCore.Shared.Items[item] then 
+            if QBCore.Shared.Items[item].image then 
+                print('Image found')
+                print(QBCore.Shared.Items[item].image)
+                return 'nui://qb-inventory/html/images/' .. QBCore.Shared.Items[item].image
+            else 
+                return QBCore.Shared.Items[item]
+            end
+        end
     end
 end
 
@@ -23,7 +31,7 @@ function getLabel(item)
         if Items[item] then 
             return Items[item].label
         end
-    else 
+    elseif GetResourceState('qb-inventory') == 'started' then
         return QBCore.Shared.Items[item].label
     end
 end
@@ -36,7 +44,7 @@ function getItemCount(item)
         else
             return 0 
         end
-    else 
+    elseif GetResourceState('qb-inventory') == 'started' then   
         local count = 0
         for k, v in pairs(QBCore.Functions.GetPlayerData().inventory) do 
             if v.name == item then 
