@@ -32,7 +32,13 @@ function getLabel(item)
             return Items[item].label
         end
     elseif GetResourceState('qb-inventory') == 'started' then
-        return QBCore.Shared.Items[item].label
+        if QBCore.Shared.Items[item] then 
+            print('Label found')
+            print(QBCore.Shared.Items[item].label)
+            return QBCore.Shared.Items[item].label
+        end
+    else 
+        return 'Item not found'
     end
 end
 
@@ -45,12 +51,21 @@ function getItemCount(item)
             return 0 
         end
     elseif GetResourceState('qb-inventory') == 'started' then   
-        local count = 0
-        for k, v in pairs(QBCore.Functions.GetPlayerData().inventory) do 
-            if v.name == item then 
-                count = count + v.amount
-            end
-        end
-        return count
+        local itemCount = lib.callback.await('lbs_pedshops:server:qb_getItemCount', false, item)
+        print('Item count: ' .. itemCount)
+        return itemCount or 0
+    end
+end
+
+
+function notifyPlayerTransactionFailure(src, message)
+    if Config.Notify == 'ox' then
+        TriggerEvent('ox_lib:notify', src, {
+            title = "Success",
+            description = message,
+            type = 'error',
+        })
+    elseif Config.Notify == 'qb' then
+        TriggerEvent('QBCore:Notify', message, 'error')
     end
 end

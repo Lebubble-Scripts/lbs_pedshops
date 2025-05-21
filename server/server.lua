@@ -5,22 +5,26 @@ local locations = {
 }
 
 
-local purchItems = {
-lockpick = 10,
-bandage = 5,
-tosti = 2,
-}
+local Items = Config.Items
 
 
 GlobalState.PedSalesLoc = locations
-GlobalState.PedSalesPurchItems = purchItems
+GlobalState.PedSalesItems = Items
 
 local function verifyItem(item)
-    return purchItems[item]
+    if Config.Framework == 'qb' then 
+        if QBCore.Shared.Items[item] then 
+            return QBCore.Shared.Items[item]
+        else
+            return false
+        end
+    else
+        return Items[item]
+    end
 end
 
 local function verifyPrice(item)
-    local itemPrice = purchItems[item]
+    local itemPrice = Items[item]
     return itemPrice
 end
 
@@ -35,7 +39,7 @@ local function checkDist(src, location)
     return false
 end
 
-RegisterServerEvent('lbs_pedshops:server:buyItem', function(item, price)
+RegisterServerEvent('lbs_pedshops:server:buyItem', function(item, price, amount)
     local src = source
     local Player = getPlayer(src)
     local itemPrice = verifyPrice(item)
@@ -43,23 +47,24 @@ RegisterServerEvent('lbs_pedshops:server:buyItem', function(item, price)
     if type(itemPrice) ~= "number" then return end
     if not checkDist(src, location) then return end
 
-    if Player.Functions.RemoveMoney('cash', itemPrice) then 
-        addItem(src, item)
-        notifyPlayer(src, item, itemPrice)
+    if Player.Functions.RemoveMoney('cash', (itemPrice * amount)) then 
+        addItem(src, item, amount)
+        notifyPlayerTransaction(src, item, (itemPrice  * amount),amount, 'buy')
     end
 
 end)
 
 
--- RegisterServerEvent('lbs_pedshops:server:sellItem', function(item, price)
---     local src = source
---     local Player = getPlayer(src)
---     local itemPrice = verifyPrice(item)
---     if not verifyItem(item) then return end
---     if type(itemPrice) ~= "number" then return end
---     if not checkDist(src, location) then return end
---     if Player.Functions.RemoveItem(item, 1) then 
---         Player.Functions.AddMoney('cash', itemPrice)
---     end
+RegisterServerEvent('lbs_pedshops:server:sellItem', function(item, price, amount)
+    local src = source
+    local Player = getPlayer(src)
+    local itemPrice = verifyPrice(item)
+    if not verifyItem(item) then return end
+    if type(itemPrice) ~= "number" then return end
+    if not checkDist(src, location) then return end
+    if Player.Functions.RemoveItem(item, amount) then 
+        Player.Functions.AddMoney('cash', ((itemPrice * 0.5) * amount))
+        notifyPlayerTransaction(src, item, ((itemPrice * 0.5) * amount), amount, 'sell')
+    end
+end)
 
--- end)
