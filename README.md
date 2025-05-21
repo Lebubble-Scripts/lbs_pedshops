@@ -12,7 +12,6 @@ A simple ped shop script for FiveM.
 
 - [x] QBCore
 - [x] QBox
-- [ ] ESX
 
 ## Inventory Support
 
