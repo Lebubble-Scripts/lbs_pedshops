@@ -4,7 +4,8 @@ game 'gta5'
 
 server_scripts {
     'server/functions.lua',
-    'server/server.lua'
+    'server/server.lua',
+    'server/callbacks.lua'
 }
 
 client_scripts {

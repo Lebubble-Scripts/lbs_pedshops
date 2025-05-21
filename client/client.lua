@@ -1,25 +1,59 @@
 repeat 
     Wait(1)
     print('Waiting for GlobalState.PedSalesLoc and GlobalState.PedSalesItems')
-until GlobalState.PedSalesLoc ~= nil and GlobalState.PedSalesPurchItems ~= nil
+until GlobalState.PedSalesLoc ~= nil and GlobalState.PedSalesItems ~= nil
 
 
 local location = GlobalState.PedSalesLoc
-local purchItems = GlobalState.PedSalesPurchItems
+local items = GlobalState.PedSalesItems
 local peds = {}
 
-local function openShopMenu(shopId)
+local function openSellMenu(shopId)
     local menu = {}
-    for k, v in pairs(purchItems) do 
+    for k, v in pairs(items) do 
         menu[#menu + 1] = {
             title = getLabel(k),
             description = "Price: $" .. v,
             icon = getImage(k),
             onSelect = function()
-                print('Selected item: ' .. k)
-                TriggerServerEvent('lbs_pedshops:server:buyItem', k, v)
-                TriggerServerEvent('test')
-                print('triggered server event')
+                local itemCount = getItemCount(k)
+                if itemCount == 0 then 
+                    notifyPlayerTransactionFailure(PlayerPedId(), "You don't have any " .. getLabel(k) .. "s to sell.")
+                    return
+                end
+                local input = lib.inputDialog('Sell Amount', {
+                    {type = 'slider', label = 'Amount', min = 1, max = itemCount, default = 1}
+                })
+                if input and input[1] then 
+                    TriggerServerEvent('lbs_pedshops:server:sellItem', k, v, input[1])
+                end
+            end
+        }
+    end
+    lib.registerContext({
+        id = 'ped_sales',
+        title = "Sales Menu",
+        options = menu
+    })
+    lib.showContext('ped_sales')
+end
+
+local function openBuyMenu(shopId)
+    local menu = {}
+    for k, v in pairs(items) do 
+        menu[#menu + 1] = {
+            title = getLabel(k),
+            description = "Price: $" .. v,
+            icon = getImage(k),
+            onSelect = function()
+                local itemCount = getItemCount(k)
+                local input = lib.inputDialog('Buy Amount', {
+                    {type = 'slider', label = 'Amount', min = 1, max = 100, default = 1}
+                })
+                if input and input[1] then 
+                    print('Buying ' .. input[1] .. ' of ' .. k)
+                    TriggerServerEvent('lbs_pedshops:server:buyItem', k, v, input[1])
+                end
             end,
         }
     end
@@ -49,11 +83,17 @@ local function spawnPeds()
                 icon = 'fas fa-shopping-cart',
                 label = "Buy Items",
                 onSelect = function()
-                    openShopMenu(k)
+                    openBuyMenu(k)
                 end,
-            }
-            
-            
+            }, 
+            {
+                name = "sell",
+                icon = 'fas fa-shopping-cart',
+                label = "Sell Items",
+                onSelect = function()
+                    openSellMenu(k)
+                end,
+            },
         })
     end
 end
